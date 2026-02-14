@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Be My Valentine?</title>
 
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<!-- Confetti Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
     body {
         margin: 0;
@@ -18,8 +24,8 @@
         margin-top: 100px;
         font-size: 2.5em;
         color: white;
-        z-index: 2;
         position: relative;
+        z-index: 2;
     }
 
     .buttons {
@@ -34,18 +40,20 @@
         border: none;
         border-radius: 10px;
         cursor: pointer;
+        position: absolute;
         transition: all 0.3s ease;
     }
 
     #yesBtn {
         background-color: #ff4d6d;
         color: white;
+        left: 40%;
     }
 
     #noBtn {
         background-color: #444;
         color: white;
-        margin-left: 20px;
+        left: 55%;
     }
 
     #message {
@@ -57,7 +65,6 @@
         z-index: 2;
     }
 
-    /* Floating hearts */
     .heart {
         position: absolute;
         bottom: -50px;
@@ -67,17 +74,12 @@
     }
 
     @keyframes floatUp {
-        0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 0.8;
-        }
-        100% {
-            transform: translateY(-110vh) rotate(360deg);
-            opacity: 0;
-        }
+        0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
     }
 </style>
 </head>
+
 <body>
 
 <h1>Will you be my Valentine? ❤️</h1>
@@ -89,41 +91,72 @@
 
 <div id="message">YAY!! I love you so much ❤️🥰</div>
 
+<!-- Romantic Music -->
+<audio id="romanticMusic" src="romantic.mp3"></audio>
+
 <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const message = document.getElementById("message");
+/* ---------------- EMAILJS INIT ---------------- */
+(function(){
+    emailjs.init("fPiCm3Srhr3xcHjbQ"); // ← EmailJS Puclic Key
+})();
 
-    let yesSize = 1;
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const message = document.getElementById("message");
+const music = document.getElementById("romanticMusic");
 
-    noBtn.addEventListener("click", function() {
-        yesSize += 0.3;
-        yesBtn.style.transform = `scale(${yesSize})`;
+/* ---------------- NO BUTTON RUNS AWAY ---------------- */
+noBtn.addEventListener("mouseover", function() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+});
+
+/* ---------------- YES BUTTON CLICK ---------------- */
+yesBtn.addEventListener("click", function() {
+
+    // 🎵 Play music
+    music.play();
+
+    // 🎉 Confetti Explosion
+    confetti({
+        particleCount: 200,
+        spread: 120,
+        origin: { y: 0.6 }
     });
 
-    yesBtn.addEventListener("click", function() {
-        document.querySelector(".buttons").style.display = "none";
-        message.style.display = "block";
+    // 💌 Send Email
+    emailjs.send("service_0m5uw3o", "service_0m5uw3o", {
+        to_email: "pararthakarki12345@gmail.com",
+        message: "She said YES! 💖🥰"
+    }).then(function(response) {
+        console.log("Email sent!", response.status);
+    }, function(error) {
+        console.log("Email failed...", error);
     });
 
-    // Create floating hearts
-    function createHeart() {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.innerHTML = "❤️";
+    document.querySelector(".buttons").style.display = "none";
+    message.style.display = "block";
+});
 
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = (Math.random() * 20 + 20) + "px";
-        heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+/* ---------------- FLOATING HEARTS ---------------- */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤️";
 
-        document.body.appendChild(heart);
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
 
-        setTimeout(() => {
-            heart.remove();
-        }, 6000);
-    }
+    document.body.appendChild(heart);
 
-    setInterval(createHeart, 300);
+    setTimeout(() => { heart.remove(); }, 6000);
+}
+
+setInterval(createHeart, 300);
+
 </script>
 
 </body>
